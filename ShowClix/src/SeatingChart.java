@@ -74,23 +74,85 @@ public class SeatingChart {
 	 * Returns the best choice of contiguous seats.
 	 * The "best" choice is determined by the smallest Manhattan Distance from the middle
 	 * of the front row.
-	 * @param numOfSeats - number of desired consecutive seats
+	 * @param numRequested - number of desired consecutive seats
 	 * @return a ConsecutiveSeats data structure representing the consecutive seats, or NULL
 	 * 			if no such group of seats exists
 	 */
-	public ConsecutiveSeats getConsecutiveSeats(int numOfSeats) {
+	public ConsecutiveSeats getConsecutiveSeats(int numRequested) {
 		
-		if (numOfSeats >= reserved[0].length) {
+		int rowSize = reserved.length - 1;
+		int columnSize = reserved[0].length - 1;
+		
+		if (numRequested > columnSize || numRequested <= 0) {
 			return null;
 		}
 		
 		ConsecutiveSeats bestSeats = null;
-		int smallestDist = Integer.MAX_VALUE;
+		double middleColumn = (columnSize + 1) / 2;
+		double smallestDistance = Double.MAX_VALUE;
 		
-		// TODO - get "best" group of contiguous seats based on smallest Manhattan distance
+		for (int row = 1; row <= rowSize; row++) {
+			
+			int numAvailable = 0;			// number of contiguous available seats found
+			double aggregateDistance = 0;	// aggregate Manhattan distance of contiguous available seats
+			
+			for (int column = 1; column <= columnSize; column++) {
+				
+				if (!isReserved(row, column)) {
+					
+					// Add Manhattan distance of available seat moving into the window
+					numAvailable++;
+					aggregateDistance += manhattanDistance(row, column, middleColumn);
+					
+				} else {
+					
+					// Move window past the reserved seat
+					numAvailable = 0;
+					aggregateDistance = 0;
+					continue;
+					
+				}
+				
+				if (numAvailable > numRequested) {
+					
+					// Subtract Manhattan distance of seat moving out of the window
+					numAvailable--;
+					aggregateDistance -= manhattanDistance(row, column - numRequested, middleColumn);
+					
+				}
+				
+				if (numAvailable == numRequested && aggregateDistance < smallestDistance) {
+					
+					// Found better seating option
+					smallestDistance = aggregateDistance;
+					bestSeats = new ConsecutiveSeats(row, column + 1 - numRequested, column);
+					
+				}
+				
+				// TODO - break if window is moving away from middle, and best found Manhattan distance is smaller than current
+					
+			}
+			
+			// TODO - break from loop if no "better" group can be found (i.e. if row is larger than avg. shortest distance already found)
+			
+			numAvailable = 0;
+			aggregateDistance = 0;
+			
+		}
 		
 		return bestSeats;
 		
+	}
+	
+	/**
+	 * Calculates the Manhattan distance of a seat from the center column of the front row
+	 * @param row - row number of seat
+	 * @param column - column number of seat
+	 * @param middleColumn - the middle column of the seating chart
+	 * @return Manhattan distance of seat from the center column of the front row
+	 */
+	private static double manhattanDistance(int row, int column, double middleColumn) {
+		return (row - 1) + Math.abs(column - middleColumn);
 	}
 	
 	/**
@@ -150,7 +212,7 @@ public class SeatingChart {
 	}
 	
 	/**
-	 * Data structure representing a consecutive group of seats in the same row
+	 * Data structure representing a consecutive group of seats
 	 */
 	class ConsecutiveSeats {
 		private int row;
