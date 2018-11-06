@@ -22,15 +22,15 @@ public class DriverProgram {
 	
 	private static final int ROWS = 3;
 	private static final int COLUMNS = 11;
-	private static final String ERROR_MESSAGE = "First line of input must be in the form of space-"
-			+ "separated values of \"RxCy\" where x and y are each an integer value.";
+	private static final String ERROR_MESSAGE = "ERROR - Invalid reservation : ";
+	private static final String WARNING_MESSAGE = "WARNING - Seat cannot be reserved : ";
 
 	public static void main(String[] args) {
 		
 		SeatingChart seatingChart = new SeatingChart(ROWS, COLUMNS);
 		Scanner scanner = new Scanner(System.in);
 		
-		// Read in list of reserved seats from stdin
+		// Parse list of reserved seats from stdin
 		String reservedString = scanner.nextLine();
 		String[] reservedArray = reservedString.split(" ");
 		
@@ -38,8 +38,8 @@ public class DriverProgram {
 			String[] seatNumbers = seatStr.split("R|C");
 			
 			if (seatNumbers.length != 3) {
-				scanner.close();
-				throw new IllegalArgumentException(ERROR_MESSAGE);
+				System.out.println(ERROR_MESSAGE + seatStr);
+				continue;
 			}
 			
 			int row;
@@ -52,16 +52,18 @@ public class DriverProgram {
 				
 			} catch (InputMismatchException | NumberFormatException ex) {
 				
-				scanner.close();
-				throw new IllegalArgumentException(ERROR_MESSAGE);
+				System.out.println(ERROR_MESSAGE + seatStr);
+				continue;
 			}
 			
-			seatingChart.reserveSeat(row, column);
+			if (!seatingChart.reserveSeat(row, column)) {
+				System.out.println(WARNING_MESSAGE + seatStr);
+			}
 			
 		}
 		
 		
-		// Read in subsequent lines of input representing numbers of consecutive seats to reserve
+		// Parse subsequent lines of input representing numbers of consecutive seats to reserve
 		while (scanner.hasNextLine()) {
 			
 			int groupSize;
@@ -73,8 +75,8 @@ public class DriverProgram {
 				
 			} catch (InputMismatchException | NumberFormatException ex) {
 				
-				scanner.close();
-				throw new IllegalArgumentException("Invalid group size in input file : " + groupSizeStr);
+				System.out.println("Invalid group size in input : " + groupSizeStr);
+				continue;
 			}
 			
 			SeatingChart.ConsecutiveSeats seatGroup = seatingChart.getConsecutiveSeats(groupSize);
