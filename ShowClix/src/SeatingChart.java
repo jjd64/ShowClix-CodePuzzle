@@ -83,18 +83,19 @@ public class SeatingChart {
 		int rowSize = reserved.length - 1;
 		int columnSize = reserved[0].length - 1;
 		
-		if (numRequested > columnSize || numRequested <= 0) {
+		if (numRequested > columnSize || numRequested < 1) {
 			return null;
 		}
 		
 		ConsecutiveSeats bestSeats = null;
-		double middleColumn = (columnSize + 1) / 2;
-		double smallestDistance = Double.MAX_VALUE;
+		double middleColumn = (columnSize + 1) / 2.0;
+		double smallestDistance = Double.MAX_VALUE;						// Manhattan distance of closest group found
+		int minAchievableDistance = 2 * gaussSum((numRequested-1)/2);	// Smallest conceivable Manhattan distance for group of this size
 		
 		for (int row = 1; row <= rowSize; row++) {
 			
-			int numAvailable = 0;			// number of contiguous available seats found
-			double aggregateDistance = 0;	// aggregate Manhattan distance of contiguous available seats
+			int numAvailable = 0;			// Number of contiguous available seats found
+			double aggregateDistance = 0;	// Aggregate Manhattan distance of contiguous available seats
 			
 			for (int column = 1; column <= columnSize; column++) {
 				
@@ -128,12 +129,14 @@ public class SeatingChart {
 					bestSeats = new ConsecutiveSeats(row, column + 1 - numRequested, column);
 					
 				}
-				
-				// TODO - break if window is moving away from middle, and best found Manhattan distance is smaller than current
 					
 			}
 			
-			// TODO - break from loop if no "better" group can be found (i.e. if row is larger than avg. shortest distance already found)
+			int nextMinAchievableDistance = (row) + minAchievableDistance;	// Minimum conceivable Manhattan distance in the next row
+			if (smallestDistance < nextMinAchievableDistance) {
+				// No better group can be found at a higher row
+				break;
+			}
 			
 			numAvailable = 0;
 			aggregateDistance = 0;
@@ -153,6 +156,20 @@ public class SeatingChart {
 	 */
 	private static double manhattanDistance(int row, int column, double middleColumn) {
 		return (row - 1) + Math.abs(column - middleColumn);
+	}
+	
+	/**
+	 * Calculates the sum of the integers from 0 to n
+	 * @return sum of integers from 0 to n (inclusive)
+	 * @throws IllegalArgumentException if n is less than 0
+	 */
+	public static int gaussSum(int n) {
+		
+		if (n < 0) {
+			throw new IllegalArgumentException("n must be greater than 0");
+		}
+		
+		return n * (n+1) / 2;
 	}
 	
 	/**
