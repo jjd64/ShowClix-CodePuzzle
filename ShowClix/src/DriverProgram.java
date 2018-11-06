@@ -22,8 +22,9 @@ public class DriverProgram {
 	
 	private static final int ROWS = 3;
 	private static final int COLUMNS = 11;
-	private static final String ERROR_MESSAGE = "ERROR - Invalid reservation : ";
-	private static final String WARNING_MESSAGE = "WARNING - Seat cannot be reserved : ";
+	private static final String RESERVATION_ERROR = "ERROR - Invalid reservation in input : ";
+	private static final String RESERVATION_WARNING = "WARNING - Seat cannot be reserved : ";
+	private static final String GROUP_ERROR = "ERROR - Invalid group size in input : ";
 
 	public static void main(String[] args) {
 		
@@ -32,32 +33,34 @@ public class DriverProgram {
 		
 		// Parse list of reserved seats from stdin
 		String reservedString = scanner.nextLine();
-		String[] reservedArray = reservedString.split(" ");
+		String[] reservedArray = reservedString.split(" +");
 		
 		for (String seatStr : reservedArray) {
-			String[] seatNumbers = seatStr.split("R|C");
 			
-			if (seatNumbers.length != 3) {
-				System.out.println(ERROR_MESSAGE + seatStr);
-				continue;
-			}
+			String[] splitOnR = seatStr.split("R");
 			
 			int row;
 			int column;
 			
 			try {
 				
-				row = Integer.parseInt(seatNumbers[1]);
-				column = Integer.parseInt(seatNumbers[2]);
+				String[] seatNumbers = splitOnR[1].split("C");
 				
-			} catch (InputMismatchException | NumberFormatException ex) {
+				if (splitOnR[0].length() != 0 || seatNumbers.length != 2) {
+					throw new IllegalArgumentException();
+				}
 				
-				System.out.println(ERROR_MESSAGE + seatStr);
+				row = Integer.parseInt(seatNumbers[0]);
+				column = Integer.parseInt(seatNumbers[1]);
+				
+			} catch (IndexOutOfBoundsException | IllegalArgumentException | InputMismatchException ex) {
+				
+				System.out.println(RESERVATION_ERROR + seatStr);
 				continue;
 			}
 			
 			if (!seatingChart.reserveSeat(row, column)) {
-				System.out.println(WARNING_MESSAGE + seatStr);
+				System.out.println(RESERVATION_WARNING + seatStr);
 			}
 			
 		}
@@ -73,9 +76,13 @@ public class DriverProgram {
 				
 				groupSize = Integer.parseInt(groupSizeStr);
 				
-			} catch (InputMismatchException | NumberFormatException ex) {
+				if (groupSize <=0 ) {
+					throw new IllegalArgumentException();
+				}
 				
-				System.out.println("Invalid group size in input : " + groupSizeStr);
+			} catch (IllegalArgumentException | InputMismatchException ex) {
+				
+				System.out.println(GROUP_ERROR + groupSizeStr);
 				continue;
 			}
 			
