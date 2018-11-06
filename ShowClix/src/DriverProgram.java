@@ -80,9 +80,12 @@ public class DriverProgram {
 			SeatingChart.ConsecutiveSeats seatGroup = seatingChart.getConsecutiveSeats(groupSize);
 			
 			if (seatGroup != null) {
+				
 				seatingChart.reserveGroup(seatGroup);
 				System.out.println(seatGroup);
+				
 			} else {
+				
 				System.out.println("Not Available");
 			}
 			
