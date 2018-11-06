@@ -160,10 +160,11 @@ public class SeatingChart {
 	
 	/**
 	 * Calculates the sum of the integers from 0 to n
+	 * @param n - integer to sum to
 	 * @return sum of integers from 0 to n (inclusive)
 	 * @throws IllegalArgumentException if n is less than 0
 	 */
-	public static int gaussSum(int n) {
+	private static int gaussSum(int n) {
 		
 		if (n < 0) {
 			throw new IllegalArgumentException("n must be greater than 0");
@@ -229,7 +230,7 @@ public class SeatingChart {
 	}
 	
 	/**
-	 * Data structure representing a consecutive group of seats
+	 * Data structure representing a consecutive group of seats in a single row
 	 */
 	class ConsecutiveSeats {
 		private int row;
@@ -263,4 +264,5 @@ public class SeatingChart {
 		}
 		
 	}
+	
 }
