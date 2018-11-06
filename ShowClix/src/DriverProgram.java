@@ -33,9 +33,9 @@ public class DriverProgram {
 		
 		// Parse list of reserved seats from stdin
 		String reservedString = scanner.nextLine();
-		String[] reservedArray = reservedString.split(" +");
+		String[] reservations = reservedString.split(" +");
 		
-		for (String seatStr : reservedArray) {
+		for (String seatStr : reservations) {
 			
 			String[] splitOnR = seatStr.split("R");
 			
