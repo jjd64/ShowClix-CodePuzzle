@@ -6,14 +6,11 @@ import java.util.Scanner;
 /**
  * A driver program for the SeatingChart class.
  * 
- * The first line of input (Up to a newline character) should be space-separated inputs in the
- * form of "RxCy" where x is the row number and y is the column number. These seats are the
- * initial reservations.
+ * The first line of input should be a space-separated list of initial reservations in the
+ * form of "RxCy" where x is the row number and y is the column number.
  * 
- * Subsequent lines of input (Up to an EOF character) should be integers representing the
- * number of consecutive seats to reserve.
- * 
- * Upon EOF, outputs the number of remaining available seats
+ * Subsequent lines of input should be integers representing the number of consecutive seats
+ * to reserve.
  * 
  * @author Jonathan DuMont
  *
@@ -31,9 +28,24 @@ public class DriverProgram {
 		SeatingChart seatingChart = new SeatingChart(ROWS, COLUMNS);
 		Scanner scanner = new Scanner(System.in);
 		
-		// Parse list of reserved seats from stdin
-		String reservedString = scanner.nextLine();
-		String[] reservations = reservedString.split(" +");
+		String reserved = scanner.nextLine();
+		reserveSeats(reserved, seatingChart);
+		
+		takeReservations(scanner, seatingChart);
+		
+		System.out.println(seatingChart.numberOfAvailableSeats());
+		
+		scanner.close();
+	}
+	
+	/**
+	 * Mark specific seats as reserved
+	 * @param reserved - space-separated values "RxCy" where x is the row number and y is the column number
+	 * @param chart - seating chart
+	 */
+	private static void reserveSeats(String reserved, SeatingChart chart) {
+		
+		String[] reservations = reserved.split(" +");
 		
 		for (String seatStr : reservations) {
 			
@@ -59,14 +71,20 @@ public class DriverProgram {
 				continue;
 			}
 			
-			if (!seatingChart.reserveSeat(row, column)) {
+			if (!chart.reserveSeat(row, column)) {
 				System.out.println(RESERVATION_WARNING + seatStr);
 			}
 			
 		}
+	}
+	
+	/**
+	 * Make reservations for groups of seats
+	 * @param scanner - input stream
+	 * @param chart - seating chart
+	 */
+	private static void takeReservations(Scanner scanner, SeatingChart chart) {
 		
-		
-		// Parse subsequent lines of input representing numbers of consecutive seats to reserve
 		while (scanner.hasNextLine()) {
 			
 			int groupSize;
@@ -86,11 +104,11 @@ public class DriverProgram {
 				continue;
 			}
 			
-			SeatingChart.ConsecutiveSeats seatGroup = seatingChart.getConsecutiveSeats(groupSize);
+			SeatingChart.ConsecutiveSeats seatGroup = chart.getConsecutiveSeats(groupSize);
 			
 			if (seatGroup != null) {
 				
-				seatingChart.reserveGroup(seatGroup);
+				chart.reserveGroup(seatGroup);
 				System.out.println(seatGroup);
 				
 			} else {
@@ -100,9 +118,6 @@ public class DriverProgram {
 			
 		}
 		
-		System.out.println(seatingChart.numberOfAvailableSeats());
-		
-		scanner.close();
 	}
 
 }
