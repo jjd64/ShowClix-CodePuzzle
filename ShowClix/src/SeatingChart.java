@@ -323,23 +323,23 @@ public class SeatingChart {
 		 */
 		private boolean reserve() {
 			
-			if (!this.isReserved) {
-				
-				this.isReserved = true;
-				
-				if (next != null) {
-					next.previous = this.previous;
-				}
-				
-				if (previous != null) {
-					previous.next = this.next;
-				} else {
-					availableSeats[this.row] = next;
-				}
-				
-			}
+			if (this.isReserved) {
+				return false;
+			} 
 			
-			return isReserved;
+			this.isReserved = true;
+				
+			if (next != null) {
+				next.previous = this.previous;
+			}
+				
+			if (previous != null) {
+				previous.next = this.next;
+			} else {
+				availableSeats[this.row] = next;
+			}
+				
+			return true;
 			
 		}
 		
