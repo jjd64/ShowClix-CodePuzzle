@@ -150,10 +150,6 @@ public class SeatingChart {
 			int numAvailable = 0;			// Number of contiguous available seats found
 			double aggregateDistance = 0;	// Aggregate Manhattan distance of contiguous available seats
 			
-			// TODO - Consider starting from the middle column and work out in one direction, then the other, continuing
-			//			to the next row once we know the aggregate distance would be larger than the smallestDistance
-			//			found, or a group is already found (per each direction) - no need to go further out from the middle
-			
 			Seat nextAvailable = availableSeats[row];
 			Seat previousAvailable = null;
 			
